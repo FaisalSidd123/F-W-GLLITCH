@@ -429,11 +429,23 @@
   .about-cta {
     padding: 0.8rem 1.5rem;
     font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
   }
 }
 
 .main-title{
   font-family: 'Gucina-Regular', sans-serif;
   letter-spacing: 2px;
-  font-size: 3rem;
+  font-size: clamp(2rem, 8vw, 3rem); /* Make it responsive */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center on mobile if wrapping */
+}
+
+@media (min-width: 768px) {
+    .main-title {
+        flex-direction: row;
+        gap: 15px;
+    }
 }

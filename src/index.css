@@ -1,0 +1,62 @@
+/* index.css - Global Styles */
+
+:root {
+  /* Default Color Themes (Can be overridden by components like Home) */
+  --primary: #6e45e2;
+  --primary-light: #8d6eff;
+  --secondary: #00d4ff;
+  --accent: #00ff9d;
+  --dark: #0a0a1a;
+  --darker: #050510;
+  --light: #f0f0f5;
+  --text: rgba(255,255,255,0.95);
+  --text-secondary: rgba(255,255,255,0.7);
+  --glacier-blue: rgba(100, 210, 255, 0.2);
+  
+  /* Typography */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--dark);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Base text styling */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-family: var(--font-body);
+  margin-bottom: 1rem;
+}
+
+/* Modern Utilities */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}

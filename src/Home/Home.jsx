@@ -1,424 +1,284 @@
-import { useEffect, useState, useRef } from 'react';
-import { FiArrowRight, FiMenu, FiX, FiCode, FiSmartphone, FiLayers, FiGlobe , FiMail, FiUser, FiAward,} from 'react-icons/fi';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { HiOutlineChatAlt2, HiOutlineUserGroup } from 'react-icons/hi';
-import { RiContactsLine, RiTeamLine } from 'react-icons/ri';
-import { RiCustomerService2Line, RiTeamFill } from 'react-icons/ri';
-import { BsRocketTakeoff, BsPeople } from 'react-icons/bs';
-import { TbHandClick } from 'react-icons/tb';
-import {  FiBriefcase, FiUsers  } from 'react-icons/fi'
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { FiMenu, FiX, FiArrowRight, FiCode, FiSmartphone, FiLayers, FiGlobe } from 'react-icons/fi';
+import { BsRocketTakeoff } from 'react-icons/bs';
 import './Home.css';
-// import logo from "./Logo.png";
 import About from '../About/About';
 import Contact from '../Contact/Contact';
 import Services from '../Services/Services';
 import Work from '../Work/Work';
 import Footer from '../Footer/Footer';
-import { Contact2Icon } from "lucide-react";
 
 const Home = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeService, setActiveService] = useState(0);
   const [themeIndex, setThemeIndex] = useState(0);
-   const [activeMessage, setActiveMessage] = useState(0);
+  const [activeMessage, setActiveMessage] = useState(0);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacityBg = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
   const themes = [
-    { 
-      primary: '#6e45e2', 
-      secondary: '#00d4ff', 
-      accent: '#00ff9d', 
-      text: 'Redefined',
-      bgOpacity: 0.25  // Increased opacity for better visibility
-    },
-    { 
-      primary: '#2563eb', 
-      secondary: '#8b5cf6', 
-      accent: '#10b981', 
-      text: 'Reimagined',
-      bgOpacity: 0.25
-    },
-    { 
-      primary: '#d946ef', 
-      secondary: '#f43f5e', 
-      accent: '#f59e0b', 
-      text: 'Reengineered',
-      bgOpacity: 0.25
-    }
+    { primary: '#6e45e2', secondary: '#00d4ff', accent: '#00ff9d', text: 'Redefined' },
+    { primary: '#2563eb', secondary: '#8b5cf6', accent: '#10b981', text: 'Reimagined' },
+    { primary: '#d946ef', secondary: '#f43f5e', accent: '#f59e0b', text: 'Reengineered' }
   ];
 
-  const services = [
-    "Web Development",
-    "Mobile App Development",
-    "Graphic Design",
-    "Digital Marketing"
+  const messages = [
+    { title: "Digital Excellence", text: "Creating boundary-pushing experiences.", icon: <FiLayers /> },
+    { title: "Web Architecture", text: "Scalable solutions for modern needs.", icon: <FiCode /> },
+    { title: "Mobile Innovation", text: "Apps that engage and captivate.", icon: <FiSmartphone /> },
+    { title: "Global Reach", text: "Transforming ideas into digital reality.", icon: <FiGlobe /> }
   ];
 
-const messages = [
-    {
-      text: "Need development? You're in the right place",
-      icon: <FiCode />
-    },
-    {
-      text: "Want stunning design? We've got you covered",
-      icon: <FiLayers />
-    },
-    {
-      text: "Looking for digital transformation? Let's talk",
-      icon: <FiGlobe />
-    },
-    {
-      text: "Seeking innovation? That's our specialty",
-      icon: <FiSmartphone />
-    }
-  ];
-
-  // Auto-rotate themes every 8 seconds
-   useEffect(() => {
+  // Auto-rotate themes
+  useEffect(() => {
     const interval = setInterval(() => {
       setThemeIndex((prev) => (prev + 1) % themes.length);
-    }, 5000); // Changed from 8000 to 5000
+    }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [themes.length]);
 
-  // Enhanced theme application with faster transition
+  // Apply theme tokens globally
   useEffect(() => {
     const currentTheme = themes[themeIndex];
     document.documentElement.style.setProperty('--primary', currentTheme.primary);
     document.documentElement.style.setProperty('--secondary', currentTheme.secondary);
     document.documentElement.style.setProperty('--accent', currentTheme.accent);
-    
-    // Add faster transition
-    document.documentElement.style.setProperty('--theme-transition', 'all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)');
-    
-    // Add pulse effect to background layers
-    const glacierLayers = document.querySelectorAll('.glacier-layer');
-    glacierLayers.forEach(layer => {
-      layer.style.animation = 'themePulse 0.8s ease-out';
-      setTimeout(() => {
-        layer.style.animation = '';
-      }, 800);
-    });
-  }, [themeIndex]);
+  }, [themeIndex, themes]);
 
-    // Auto-rotate messages every 3 seconds
- useEffect(() => {
+  // Auto-rotate messages
+  useEffect(() => {
     const messageInterval = setInterval(() => {
       setActiveMessage((prev) => (prev + 1) % messages.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(messageInterval);
+  }, [messages.length]);
+
+  // Track mouse for 3D phone effect
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 20; // max 10deg
+      const y = (clientY / window.innerHeight - 0.5) * -20; // inverted
+      setMousePos({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Auto-rotate services every 3 seconds
-useEffect(() => {
-  const serviceInterval = setInterval(() => {
-    setActiveService((prev) => (prev + 1) % services.length);
-  }, 3000);
-  return () => clearInterval(serviceInterval);
-}, []);
+  const scrollTo = (id) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.2, delayChildren: 0.3 } 
+    }
+  };
+
+  const childVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { type: 'spring', damping: 20, stiffness: 100 } 
+    }
+  };
 
   return (
     <div id="home" className="home-container" ref={containerRef}>
-      {/* Animated Glacier Background */}
-      <motion.div 
-        className="glacier-bg"
-        style={{ y: yBg, opacity: opacityBg }}
-      >
+      {/* Animated Gradient Background */}
+      <div className="glacier-bg">
         <div className="glacier-layer glacier-1"></div>
         <div className="glacier-layer glacier-2"></div>
         <div className="glacier-layer glacier-3"></div>
-      </motion.div>
+      </div>
 
-      
       {/* Navigation */}
       <motion.nav
         className="navbar"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ delay: 0.3 }}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="nav-container">
           <div className="nav-left">
-            <span className="nav-brand">F&W GLLITCH</span>
+            <span className="nav-brand">F&W GLITTCH</span>
           </div>
           
           <div className={`nav-right ${menuOpen ? 'active' : ''}`}>
-             <motion.a 
-        href="#service" 
-        className="nav-link"
-        whileHover={{ y: -2 }}
-        onClick={(e) => {
-          e.preventDefault();
-          document.getElementById('service')?.scrollIntoView({ behavior: 'smooth' });
-          setMenuOpen(false);
-        }}
-      >
-        Services
-      </motion.a>
-
-      {/* Work Link */}
-      <motion.a 
-        href="#work" 
-        className="nav-link"
-        whileHover={{ y: -2 }}
-        onClick={(e) => {
-          e.preventDefault();
-          document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
-          setMenuOpen(false);
-        }}
-      >
-        Work
-      </motion.a>
-
-      {/* About Link */}
-      <motion.a 
-        href="#about" 
-        className="nav-link"
-        whileHover={{ y: -2 }}
-        onClick={(e) => {
-          e.preventDefault();
-          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-          setMenuOpen(false);
-        }}
-      >
-        About
-      </motion.a>
-
-  
-      {/* CTA Button (now Contact Us) */}
-      <motion.button 
-        className="nav-cta"
-        whileHover={{ 
-          scale: 1.05,
-          boxShadow: "0 4px 15px rgba(110, 69, 226, 0.4)"
-        }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-        }}
-      >
-        <span className="cta-text">Contact us</span>
-        <FiMail className="cta-icon" fontSize={15} />
-        <span className="cta-hover-effect"></span>
-        <motion.span 
-          className="cta-pulse" 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1.2, opacity: 0.3 }}
-          transition={{ 
-            repeat: Infinity,
-            repeatType: "reverse",
-            duration: 2
-          }}
-        />
-      </motion.button>
+            <a href="#services" className="nav-link" onClick={(e) => { e.preventDefault(); scrollTo('service'); }}>Services</a>
+            <a href="#work" className="nav-link" onClick={(e) => { e.preventDefault(); scrollTo('work'); }}>Work</a>
+            <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); scrollTo('about'); }}>About</a>
+            
+            <motion.button 
+              className="nav-cta"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollTo('contact')}
+            >
+              Contact Us <FiArrowRight />
+            </motion.button>
           </div>
 
-          <motion.button 
+          <button 
             className="mobile-menu-btn" 
             onClick={() => setMenuOpen(!menuOpen)}
-            whileHover={{ scale: 1.1 }}
           >
-            {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-          </motion.button>
+            {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+          </button>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
       <section className="hero">
-        <div className="hero-content">
-          <motion.h1 
-            className="hero-title"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <motion.span 
-              className="title-line"
-              whileHover={{ scale: 1.02 }}
-            >
-              Digital Innovation
-            </motion.span>
-            <motion.span 
-              className="title-line"
-              whileHover={{ scale: 1.02 }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={themeIndex}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className="dynamic-word"
-                >
-                  {themes[themeIndex].text}
-                </motion.span>
-              </AnimatePresence>
-            </motion.span>
-          </motion.h1>
+        <div className="hero-layout">
           
-          <motion.p 
-            className="hero-subtitle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-          >
-            We create boundary-pushing digital experiences that captivate audiences
-            and deliver measurable results.
-          </motion.p>
-
-        
-
-          
-
           <motion.div 
-            className="service-display"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
+            className="hero-content"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
           >
-            <div className="service-rotator">
-              {services.map((service, index) => (
-                <motion.div
-                  key={index}
-                  className={`service-item ${index === activeService ? 'active' : ''}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: index === activeService ? 1 : 0,
-                    y: index === activeService ? 0 : 20
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {service}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+            <motion.div variants={childVariants} className="hero-badge">
+              <BsRocketTakeoff /> Future-Ready Agency
+            </motion.div>
 
-             {/* /Screen  */}
-         <div className="message-phone">
-          <div className="phone-frame">
-            <div className="phone-screen">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeMessage}
-                  className="phone-message-container"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <motion.div 
-                    className="message-icon"
-                    initial={{ scale: 0.8, rotate: -15 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ 
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 15
-                    }}
+            <motion.h1 variants={childVariants} className="hero-title">
+              <span className="title-line">Digital Innovation</span>
+              <span className="title-line">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={themeIndex}
+                    initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.4 }}
+                    className="dynamic-word"
                   >
-                    {messages[activeMessage].icon}
-                  </motion.div>
-                  <div className="phone-message">
-                    {messages[activeMessage].text}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            <div className="phone-notch"></div>
-            <div className="phone-home-indicator"></div>
-          </div>
-          <div className="phone-glow" style={{ background: themes[themeIndex].primary }}></div>
-        </div>
+                    {themes[themeIndex].text}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </motion.h1>
+            
+            <motion.p variants={childVariants} className="hero-subtitle">
+              We craft boundary pushing, aesthetic, and functional digital experiences that captivate modern audiences and drive real results.
+            </motion.p>
 
-          <motion.div 
-            className="hero-buttons"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.3 }}
-          >
-                <motion.button
-    className="primary-btn"
-    whileHover={{ 
-      scale: 1.05,
-      boxShadow: "0 8px 25px rgba(110, 69, 226, 0.5)"
-    }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => {
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-    }}
-  >
-    <span className="btn-text">Launch Project</span>
-    <BsRocketTakeoff className="btn-icon" fontSize={18}/>
-    <motion.span
-      className="sparkle"
-      initial={{ scale: 0 }}
-      animate={{ scale: 1.2, opacity: 0 }}
-      transition={{ duration: 1.5, repeat: Infinity }}
-    />
-    <span className="btn-hover-effect"></span>
-  </motion.button>
-
-  {/* About Button - Now with team huddle icon */}
-  <motion.button
-    className="secondary-btn"
-    whileHover={{ 
-      scale: 1.05,
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      boxShadow: "0 4px 20px rgba(0, 212, 255, 0.3)"
-    }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => {
-      document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-    }}
-  >
-    <span className="btn-text">Our team</span>
-    <RiTeamFill className="btn-icon" fontSize={19}/>
-    <motion.span
-      className="connection-dots"
-      initial={{ opacity: 0 }}
-      whileHover={{ opacity: 1 }}
-    />
-    <span className="btn-hover-effect"></span>
-  </motion.button>
+            <motion.div variants={childVariants} className="hero-buttons">
+              <motion.button
+                className="primary-btn"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo('work')}
+              >
+                View Our Work
+              </motion.button>
+              <motion.button
+                className="secondary-btn"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo('contact')}
+              >
+                Start a Project
+              </motion.button>
+            </motion.div>
           </motion.div>
-        </div>
 
-       
+          {/* 3D Mobile Phone Showpiece */}
+          <motion.div 
+            className="hero-visual"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <motion.div 
+              className="phone-container"
+              animate={{ 
+                rotateX: mousePos.y, 
+                rotateY: mousePos.x,
+                y: [0, -10, 0] // gentle hover
+              }}
+              transition={{ 
+                rotateX: { type: 'spring', damping: 30, stiffness: 100 },
+                rotateY: { type: 'spring', damping: 30, stiffness: 100 },
+                y: { repeat: Infinity, duration: 4, ease: "easeInOut" }
+              }}
+            >
+              <div className="phone-case">
+                <div className="phone-notch"></div>
+                <div className="phone-screen">
+                  
+                  <div className="phone-content">
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={activeMessage}
+                        className="phone-icon-wrap"
+                        initial={{ scale: 0, rotate: -45 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      >
+                        {messages[activeMessage].icon}
+                      </motion.div>
+                    </AnimatePresence>
+
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeMessage}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <h3>{messages[activeMessage].title}</h3>
+                        <p>{messages[activeMessage].text}</p>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                  
+                </div>
+                <div className="phone-indicator"></div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+        </div>
       </section>
 
       {/* Theme Indicator */}
       <motion.div 
         className="theme-indicator"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.5, duration: 0.5 }}
       >
-        {themes.map((_, index) => (
-          <motion.button
+        {themes.map((t, index) => (
+          <button
             key={index}
             className={`theme-dot ${index === themeIndex ? 'active' : ''}`}
+            style={{ backgroundColor: t.primary, color: t.primary }}
             onClick={() => setThemeIndex(index)}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
+            aria-label={`Switch to theme ${index + 1}`}
           />
         ))}
       </motion.div>
+
+      {/* Page Sections */}
       <About theme={themes} themeIndex={themeIndex} />
-      
-      <Services theme={themes} themeIndex={themeIndex}/>
+      <Services theme={themes} themeIndex={themeIndex} />
       <Work theme={themes} themeIndex={themeIndex} />
-      <Contact theme={themes} themeIndex={themeIndex}/>
-      <Footer theme={themes} themeIndex={themeIndex}/>
+      <Contact theme={themes} themeIndex={themeIndex} />
+      <Footer theme={themes} themeIndex={themeIndex} />
       
     </div>
   );
